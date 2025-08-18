@@ -3,10 +3,18 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, Path
 from starlette import status
+from database import engine
 from models import Todos
+import models
 from database import SessionLocal
 
-router = APIRouter()
+router = APIRouter(
+    prefix="todos",
+    tags=["todos"],
+    responses={404:{"description": "Not found"}}
+)
+
+models.Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()
@@ -14,4 +22,6 @@ def get_db():
         yield db
     finally:
         db.close()
+
+        
 
